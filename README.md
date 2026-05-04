@@ -48,8 +48,8 @@ movie_recommendation_system/
 **1. Clone the repo**
 
 ```bash
-git clone https://github.com/your-username/movie-recommendation-system.git
-cd movie-recommendation-system
+git clone https://github.com/NeelContractor/movie_recommendation_system.git
+cd movie_recommendation_system
 ```
 
 **2. Install dependencies**
