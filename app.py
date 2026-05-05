@@ -4,25 +4,28 @@ import numpy as np
 import pickle
 import json
 import ast
+import os
 
 # --- Load assets ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 @st.cache_resource
 def load_assets():
-    with open('cosine_sim.pkl', 'rb') as f:
+    with open(os.path.join(BASE_DIR, 'cosine_sim.pkl'), 'rb') as f: 
         cosine_sim = pickle.load(f)
     return cosine_sim
 
 @st.cache_data
 def load_data():
-    movies = pd.read_csv('movies_clean.csv')
+    movies = pd.read_csv(os.path.join(BASE_DIR, 'movies_clean.csv'))  
     movies['genres_list'] = movies['genres_list'].apply(
         lambda x: ast.literal_eval(x) if isinstance(x, str) else x)
-    top_movies = pd.read_csv('top_movies.csv')
-    ratings_df = pd.read_csv('ratings_df.csv')
-    predicted_df = pd.read_csv('predicted_ratings.csv', index_col=0)
+    top_movies = pd.read_csv(os.path.join(BASE_DIR, 'top_movies.csv')) 
+    ratings_df = pd.read_csv(os.path.join(BASE_DIR, 'ratings_df.csv')) 
+    predicted_df = pd.read_csv(os.path.join(BASE_DIR, 'predicted_ratings.csv'), index_col=0)  # ← UPDATED
     predicted_df.index = predicted_df.index.astype(int)
     predicted_df.columns = predicted_df.columns.astype(int)
-    with open('movie_indices.json') as f:
+    with open(os.path.join(BASE_DIR, 'movie_indices.json')) as f: 
         indices = json.load(f)
     return movies, top_movies, ratings_df, predicted_df, indices
 
