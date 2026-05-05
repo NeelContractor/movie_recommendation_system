@@ -5,14 +5,17 @@ import pickle
 import json
 import ast
 import os
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 # --- Load assets ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @st.cache_resource
-def load_assets():
-    with open(os.path.join(BASE_DIR, 'cosine_sim.pkl'), 'rb') as f: 
-        cosine_sim = pickle.load(f)
+def load_assets(_movies):
+    tfidf = TfidfVectorizer(max_features=5000, stop_words='english')
+    tfidf_matrix = tfidf.fit_transform(_movies['tags'])  # use whatever your tag column is called
+    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
     return cosine_sim
 
 @st.cache_data
@@ -22,15 +25,15 @@ def load_data():
         lambda x: ast.literal_eval(x) if isinstance(x, str) else x)
     top_movies = pd.read_csv(os.path.join(BASE_DIR, 'top_movies.csv')) 
     ratings_df = pd.read_csv(os.path.join(BASE_DIR, 'ratings_df.csv')) 
-    predicted_df = pd.read_csv(os.path.join(BASE_DIR, 'predicted_ratings.csv'), index_col=0)  # ← UPDATED
+    predicted_df = pd.read_csv(os.path.join(BASE_DIR, 'predicted_ratings.csv'), index_col=0)  
     predicted_df.index = predicted_df.index.astype(int)
     predicted_df.columns = predicted_df.columns.astype(int)
     with open(os.path.join(BASE_DIR, 'movie_indices.json')) as f: 
         indices = json.load(f)
     return movies, top_movies, ratings_df, predicted_df, indices
 
-cosine_sim = load_assets()
 movies, top_movies, ratings_df, predicted_df, indices = load_data()
+cosine_sim = load_assets(movies)
 n_movies = len(top_movies)
 
 # --- Recommendation functions ---
