@@ -2,3 +2,4 @@
 data
 cosine_sim.pkl
 svd_model.pkl
+*.pkl
